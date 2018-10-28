@@ -20,8 +20,9 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: `<fill in>`
+**Application description**: FriendsTime je aplikácia, ktorá umožní priateľom organizovať, plánovať spoločné akcie v Bratislave. V dannom rozsahu vzhľadá podniky na základe filtračnźch podmienok (napr. bary v dosahu 500m a rôznymi farbarmi
+ zvýrazní ich podľa odporúčania). Následne im ukáže cestu k nim. Iným prípadom môže byť naplánovanie bežeckej trasy v Bratislave vzfarbenú podľa v závislosti od náročnosti.   
 
-**Data source**: `<fill in>`
+**Data source**: Dodaný dataset Bratislava
 
-**Technologies used**: `<fill in>`
+**Technologies used**: java, spring, postgis, hibernate, mapbox.
