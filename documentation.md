@@ -2,7 +2,7 @@
 
 Táto aplikácia zobrazuje pub a reštaurácie v Bratislave na mape. Niektoré z obsahujúcich funkcií sú:
 - vyhľadanie podniku (typ si môže vybrať používateľ) v zadanoom rozsahu od mojej aktuálnej pozície
-- zobrazenie heatmapy podnikov Bratislave nad jednotlivými oblasťami Bratislavi 
+- zobrazenie heatmapy podnikov Bratislave nad jednotlivými oblasťami Bratislavy 
 - vyhľadanie podnikov (typ si môže vybrať používateľ) nad oblasťou v Bratislave
 - zobrazenie priameho spoju mestskej hromadnej dopravy od mojej aktuálnej polohy k podniku
 - vyhľadanie liniek s jedným prestupom od mojej akutálnej polohy k podniku
@@ -12,6 +12,22 @@ Táto aplikácia zobrazuje pub a reštaurácie v Bratislave na mape. Niektoré z
 Vyhľadanie podnikov v zadanom radiuse:
 
 ![Screenshot](findpubs.PNG)
+
+Zobrazenie heatmapy podnikov jednotlivých oblastiach Bratislavy:
+
+![Screenshot](heatmap.PNG)
+
+Vyhľadanie podniko v oblasti Bratislavy:
+
+![Screenshot](findheatmap.PNG)
+
+Zobrazenie trasy priameho spoju:
+
+![Screenshot](direct.PNG)
+
+Vyhľadanie liniek s prestupom v okne Traffic links:
+
+![Screenshot](trafic.PNG)
 
 The application has 2 separate parts, the client which is a [frontend web application](#frontend) using mapbox API and mapbox.js and the [backend application](#backend) written in [Rails](http://rubyonrails.org/), backed by PostGIS. The frontend application communicates with backend using a [REST API](#api).
 
