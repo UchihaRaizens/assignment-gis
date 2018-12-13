@@ -20,8 +20,7 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: FriendsTime je aplikácia, ktorá umožní priateľom organizovať, plánovať spoločné akcie v Bratislave. V dannom rozsahu vzhľadá podniky na základe filtračnźch podmienok (napr. bary v dosahu 500m a rôznymi farbarmi
- zvýrazní ich podľa odporúčania). Následne im ukáže cestu k nim. Iným prípadom môže byť naplánovanie bežeckej trasy v Bratislave vyfarbenú podľa v závislosti od jej náročnosti (pričom im ukáže cestu na začiatok bežeckej trasy). 
+**Application description**: FriendsTime je aplikácia, ktorá umožní priateľom organizovať, plánovať spoločné akcie v Bratislave. V dannom rozsahu vzhľadá podniky na základe filtračnźch podmienok (napr. bary v dosahu 500m a rôznymi farbarmi zvýrazní ich podľa odporúčania). Druhou možnosťou je zobrazenie heatmapy podnikov v jednotlivých oblastiach Bratislavy. V zobrazených oblastiach heatmapy umožňuje nájsť všetky podniky podľa vybraného typu filtra. Tretia možnosť umožňuje vyhladať spôsob hromadnej dopravy k podniku. Používateľ si môže vybrať priamy spoj alebo spoj s jedným prestupm. V prípade nájdenia priameho prestupu, mu cestu daného autobusu zobrazí na mape. Ak ide možnosť s prestupom v okne mu zobrazí linky autobusov, ktoré môže použiť.
 
 **Data source**: Dodaný dataset Bratislava
 
