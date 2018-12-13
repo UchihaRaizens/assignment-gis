@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
@@ -18,7 +18,15 @@
 
     <!-- Custom styles for this template -->
     <link href="css/simple-sidebar.css" rel="stylesheet">
-
+	<style>
+	.marker {
+ 			 background-image: url('images/marker.png');
+  			background-size: cover;
+  			width: 50px;
+  			height: 50px;
+	}
+	
+	</style>
 </head>
 
 <body>
@@ -57,12 +65,42 @@
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
-
+		<div class="alert alert-danger" role="alert" style="visibility: hidden;" id="alert">
+  			<strong>Oh snap!</strong> Don´t find route
+  			 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    			<span aria-hidden="true">&times;</span>
+  			 </button>
+		</div>
         <!-- Page Content -->
-    	<div id='map' style='width: 1700px; height: 1200px; padding-left: 200px'></div>
-		
+        <div id=page-content-wrapper class="row">
+	        <div id=filter class="col-md-2">Filter
+	        	<form method="POST"  th:action="@{/}" th:object="${searchFilter}">
+	  				<div class="form-group">
+	    			<label for="radiusDistance">Distance</label>
+				    <input type="number" th:field="*{radiusDistance}" class="form-control" id="radiusDistance" placeholder="Enter distance">
+				    <div class="form-check form-check-inline">
+    					<input type="checkbox" th:field="*{bar}" class="form-check-input" id="checkBar">
+    					<label class="form-check-label" for="checkBar">Bar</label>
+    					<input type="checkbox" th:field="*{pub}" class="form-check-input" id="checkPub">
+    					<label class="form-check-label" for="checkPub">Pub</label>
+  					</div>
+				    </div>
+				  <a href="#filter" class="btn btn-secondary" id="buttonSearch">Search</a>
+				  <a href="#heatmap" class="btn btn-secondary" id="buttonHeatmap">Heatmap</a>
+				  <a href="#heatmap" class="btn btn-secondary" id="buttonResetPoints">Reset points</a>
+				  
+				</form>
+				<label class="radio-inline"><input type="radio" id="rad1"name="optradio" checked>Direct</label>
+				<label class="radio-inline"><input type="radio" id="rad2" name="optradio">With transfer</label>
+				<div class="form-group">
+  					<label for="exampleFormControlTextarea2">Traffic links</label>
+  					<textarea class="form-control rounded-0" id="exampleFormControlTextarea2" rows="3"></textarea>
+				</div>
+			</div>
+	    	<div id='map' class="col-md-10" style='width: 1700px; height: 1200px;'></div>
+			<pre id='coordinates' class='coordinates'></pre>
         <!-- /#page-content-wrapper -->
-
+		</div>
     </div>
     <!-- /#wrapper -->
 
@@ -74,8 +112,263 @@
 			mapboxgl.accessToken = 'pk.eyJ1IjoidWNoaWhhcmFpemVucyIsImEiOiJjam02YXNoeHIwMDdvM3ZuczZ3bDNheG80In0.Xks6QJod9ZTiKE94T4U4Jw';
 			var map = new mapboxgl.Map({
 				container : 'map',
-				style : 'mapbox://styles/mapbox/streets-v10'
+				style : 'mapbox://styles/mapbox/streets-v10',
+				center: [17.1077478,48.1485965],
+				zoom: 15
 			});
+			console.log("Star")
+
+			var canvas = map.getCanvasContainer();
+			var coords;
+			var layer;
+			var idlayers = []
+			var popups = []
+			var markers = []
+			var isMarker = false;
+			var geojson = {
+	    			"type": "FeatureCollection",
+	    			"features": [{
+	        		"type": "Feature",
+	        		"geometry": {
+	            	"type": "Point",
+	            	"coordinates": [17.1077478,48.1485965]
+	        		}
+	    		}]
+			};
+			
+			function onMove(e) {
+			    coords = e.lngLat;
+
+			    // Set a UI indicator for dragging.
+			    canvas.style.cursor = 'grabbing';
+
+			    // Update the Point feature in `geojson` coordinates
+			    // and call setData to the source layer `point` on it.
+			    geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
+			    map.getSource('point').setData(geojson);
+			}
+
+			function onUp(e) {
+			    coords = e.lngLat;
+
+			    // Print the coordinates of where the point had
+			    // finished being dragged to on the map.
+			    coordinates.style.display = 'block';
+			    coordinates.innerHTML = 'Longitude: ' + coords.lng + '<br />Latitude: ' + coords.lat;
+			    canvas.style.cursor = '';
+
+			    // Unbind mouse/touch events
+			    map.off('mousemove', onMove);
+			    map.off('touchmove', onMove);
+			}
+
+			map.on('load', function() {
+
+			    // Add a single point to the map
+			    map.addSource('point', {
+			        "type": "geojson",
+			        "data": geojson
+			    });
+
+			    map.addLayer({
+			        "id": "point",
+			        "type": "circle",
+			        "source": "point",
+			        "paint": {
+			            "circle-radius": 10,
+			            "circle-color": "#FF0000"
+			        }
+			    });
+
+			    // When the cursor enters a feature in the point layer, prepare for dragging.
+			    map.on('mouseenter', 'point', function() {
+			        map.setPaintProperty('point', 'circle-color', '#3bb2d0');
+			        canvas.style.cursor = 'move';
+			    });
+
+			    map.on('mouseleave', 'point', function() {
+			        map.setPaintProperty('point', 'circle-color', '#3887be');
+			        canvas.style.cursor = '';
+			    });
+
+			    map.on('mousedown', 'point', function(e) {
+			        // Prevent the default map drag behavior.
+			        e.preventDefault();
+
+			        canvas.style.cursor = 'grab';
+
+			        map.on('mousemove', onMove);
+			        map.once('mouseup', onUp);
+			    });
+
+			    map.on('touchstart', 'point', function(e) {
+			        if (e.points.length !== 1) return;
+
+			        // Prevent the default map drag behavior.
+			        e.preventDefault();
+
+			        map.on('touchmove', onMove);
+			        map.once('touchend', onUp);
+			    });
+			    
+			    map.on('click', function (e) {
+			    	console.log(map)
+					if (layer == null)
+						return
+					var features = map.queryRenderedFeatures(e.point, {
+					    layers: [layer] // replace this with the name of the layer
+					  });
+					console.log(features)
+				 });
+			});
+			
+			
+	$('#buttonSearch').click(function () {
+		var params = {
+				radiusDistance: function() { if(!$('#radiusDistance').val()){return 300} else {return $('#radiusDistance').val()} },
+		    	bar: function() { if(!$('#checkBar:checked').val()){return false} else {return $('#checkBar:checked').val()} },
+		    	pub: function() { if(!$('#checkPub:checked').val()){return false} else {return $('#checkPub:checked').val()} },
+		    	lng: coords.lng,
+		    	lat: coords.lat
+		}
+		$.get("http://localhost:8080/search",params, function(data) {
+				isMarker = true
+				var geojson = JSON.parse(data)
+				idlayers.push(geojson.id)
+				layer = geojson.id
+
+				map.addLayer(JSON.parse(data))
+				geojson.source.data.features.forEach(function(marker) {
+  				// create a HTML element for each feature
+  				var el = document.createElement('div');
+  				el.className = 'marker';
+				var popup = new mapboxgl.Popup({ offset: 25 })
+			    .setHTML('<h1>' + marker.properties.description + '<h1>' +
+			    		'<h5 id="cord">Coordinates:'+ marker.geometry.coordinates + "</h5>"
+			    		+'<a href="#go" class="btn btn-secondary nvg" id="buttonGo">Go</a>')	;
+				// make a marker for each feature and add to the map
+				popups.push(popup)
+  				var marker = new mapboxgl.Marker(el)
+  				.setLngLat(marker.geometry.coordinates)
+  				.setPopup(popup)
+  				.addTo(map);
+				markers.push(marker)
+				});	
+		});
+	});
+	
+	$('#buttonHeatmap').click(function () {
+		var url = "http://localhost:8080/heatmap"
+		var params = {
+				radiusDistance: function() { if(!$('#radiusDistance').val()){return 300} else {return $('#radiusDistance').val()} },
+		    	bar: function() { if(!$('#checkBar:checked').val()){return false} else {return $('#checkBar:checked').val()} },
+		    	pub: function() { if(!$('#checkPub:checked').val()){return false} else {return $('#checkPub:checked').val()} }
+		}
+
+		$.get("http://localhost:8080/heatmap",params, function(data) {
+			console.log(data)
+			data.forEach(function(area){
+				var geojson = JSON.parse(area.geojson)
+				idlayers.push(geojson.id)
+				console.log(geojson)
+				map.addLayer(JSON.parse(area.geojson))
+				// create a HTML element for each feature
+				console.log(data.id)
+				 map.on('click', geojson.id, function (e) {
+					if(!isMarker) {
+        			new mapboxgl.Popup()
+            		.setLngLat(e.lngLat)
+            		.setHTML('<h1 id=prcname>' + area.areaName + '<h1>' +
+    			    		'<h5 id="perc"> Percent: '+Math.round(area.percentage * 100) / 100 + "%</h5>"
+    			    		+'<a href="#go" class="btn btn-secondary prct" id="buttonGo">Search in area</a>')
+            		.addTo(map);
+					}
+				 });
+			});	
+		});
+	});
+
+	 $(document).on("click", "a.nvg" , function() {
+		 var cord = document.getElementById("cord").innerHTML;
+		 document.getElementById("exampleFormControlTextarea2").innerHTML = ""
+		 var temp 
+		 if(!$('#rad1:checked').val()){temp = true} else {temp = false }
+		 var params = {
+					bar: function() { if(!$('#checkBar:checked').val()){return false} else {return $('#checkBar:checked').val()} },
+			    	pub: function() { if(!$('#checkPub:checked').val()){return false} else {return $('#checkPub:checked').val()} },
+					placeCord: cord,
+					lng: coords.lng,
+			    	lat: coords.lat,
+					type: function() { if(!$('#rad1:checked').val()){return true} else {return false }}
+			}
+			$.get("http://localhost:8080/route",params, function(data) {
+					console.log(data)
+					if(data == "0") {
+						console.log("alert")
+						$('.alert').alert()
+						document.getElementById("alert").style.visibility = "visible"
+					}
+					else {
+						console.log(temp)
+						if(!temp){
+							var geojson = JSON.parse(data)
+							idlayers.push(geojson.id)
+							map.addLayer(JSON.parse(data))
+						}
+						else {
+							document.getElementById("exampleFormControlTextarea2").innerHTML = data
+						}
+					}
+			});
+     });
+	 
+	 $(document).on("click", "a.prct" , function() {
+		 var area = document.getElementById("prcname").innerHTML;
+		 isMarker = true
+		 var params = {
+					bar: function() { if(!$('#checkBar:checked').val()){return false} else {return $('#checkBar:checked').val()} },
+			    	pub: function() { if(!$('#checkPub:checked').val()){return false} else {return $('#checkPub:checked').val()} },
+					name: area
+			}
+			$.get("http://localhost:8080/pointsArea",params, function(data) {
+					var geojson = JSON.parse(data)
+					console.log(data)
+					layer = geojson.id
+					idlayers.push(geojson.id)
+					map.addLayer(JSON.parse(data))
+					geojson.source.data.features.forEach(function(marker) {
+	  				// create a HTML element for each feature
+	  				var el = document.createElement('div');
+	  				el.className = 'marker';
+					var popup = new mapboxgl.Popup({ offset: 25 })
+				    .setHTML('<h1>' + marker.properties.description + '<h1>' +
+				    		'<h5 id="cord">'+ marker.geometry.coordinates + "</h5>"
+				    		+'<a href="#go" class="btn btn-secondary nvg" id="buttonGo">Go</a>')	;
+					// make a marker for each feature and add to the map
+	  				var marker =new mapboxgl.Marker(el)
+	  				.setLngLat(marker.geometry.coordinates)
+	  				.setPopup(popup)
+	  				.addTo(map);
+					markers.push(marker)
+					popups.push(popup)
+					});	
+			});
+     });
+	 $('#buttonResetPoints').click(function () {
+		 isMarker = false
+		  console.log(idlayers)
+		  idlayers.forEach(function(layer) {
+			  map.removeLayer(layer)
+		  });
+		 markers.forEach(function(marker){
+			 marker.remove()
+		 })
+		 popups.forEach(function(popup) {
+			 popup.remove()
+		 })
+		 console.log($('#rad1:checked').val());
+		 console.log($('#rad2:checked').val());
+	 });
 	</script>
 </body>
 
