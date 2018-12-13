@@ -33,7 +33,7 @@ Aplikácia pozostáva z dvoch častí, z frontendu a backendu. Frontend využív
 
 # Frontend
 
-The frontend application is a static HTML page (`index.html`), which shows a mapbox.js widget. It is displaying hotels, which are mostly in cities, thus the map style is based on the Emerald style. I modified the style to better highlight main sightseeing points, restaurants and bus stops, since they are all important when selecting a hotel. I also highlighted rails tracks to assist in finding a quiet location.
+Frontendová časť apliácie je HTML stránka (`index.html`), zobrazujúca mapu pomocou mapbox-gl.js. Súčasťou stránky je filter (s podporou Bootstrapu) umožňujúci filtrovať typy zobrazených podnikov a zadávať vzdialenosť do ktorej má vyhľadávať a aký typ spojenia má vyhľadať pri hľadaní trasy (priamy, s prestupom). Súčasťou filtra sú funkcie na zobrazenie heatmapy a vyčistenie mapy a zobrazenia vyhľadaných liniek spojov. Samotná mapa podporuje interakciu ako hľadanie podnikov v danej Oblasti Bratislavy, vybratie trasy ku, ktorej sa má hľadať trasa.
 
 All relevant frontend code is in `application.js` which is referenced from `index.html`. The frontend code is very simple, its only responsibilities are:
 - detecting user's location, using the standard [web location API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation)
