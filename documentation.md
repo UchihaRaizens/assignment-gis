@@ -13,9 +13,32 @@ Vyhľadanie podnikov v zadanom radiuse:
 
 ![Screenshot](findpubs.PNG)
 
-Zobrazenie heatmapy podnikov jednotlivých oblastiach Bratislavy:
+```
+select r.name as place_name, st_asgeojson(ST_Transform(r.way,4326)), r.amenity, 
+	round(cast(ST_Distance(ST_MakePoint(17.067675558809526,48.15798850101939)::geography,
+	ST_Transform(r.way, 4326)::geography) as numeric),0) as distancee 
+from planet_osm_point r where r.amenity in ('bar','pub') and ST_DWithin((ST_MakePoint(17.067675558809526,48.15798850101939))::geography, ST_Transform(r.way, 4326)::geography, 50);
+```
+
+Zobrazenie heatmapy podnikov  v jednotlivých oblastiach Bratislavy:
 
 ![Screenshot](heatmap.PNG)
+```
+WITH temp1 AS (
+	--najdenie casti bratislavy, ktore su castou inych oblasti
+	SELECT distinct b.name FROM planet_osm_polygon AS a, planet_osm_polygon AS b 
+	where a.boundary like 'administrative' and a.admin_level like '10' and b.boundary like 'administrative' and 
+	b.admin_level like '10' and a.name not like b.name and st_contains(a.way, b.way)
+) 
+select r.name as area_name, 
+st_asgeojson(ST_Transform(r.way,4326)) as area_geo, 
+count(p.name)  / (select count(*) from planet_osm_point p where amenity in ('pub','bar'))::numeric *100 as percentage 
+from planet_osm_point p 
+cross join planet_osm_polygon r 
+where p.amenity in ('pub','bar') and r.boundary like 'administrative' and 
+r.admin_level like '10'  and st_contains(ST_Transform(r.way,4326), ST_Transform(p.way,4326)) and r.name not in (select * from temp1) 
+group by r.name, r.way;
+```
 
 Vyhľadanie podnikov v oblasti Bratislavy:
 
@@ -24,16 +47,20 @@ Vyhľadanie podnikov v oblasti Bratislavy:
 Zobrazenie trasy priameho spoju:
 
 ![Screenshot](direct.PNG)
+```
+```
 
 Vyhľadanie liniek s prestupom v okne Traffic links:
 
 ![Screenshot](transfer.PNG)
+```
+```
 
 Aplikácia pozostáva z dvoch častí, z frontendu a backendu. Frontend využíva  mapbox API a mapbox.js a AJAXové volania na backend. Backend (java, spring) spracuje tieto volania, komunikuje a získava dáta z databázy, kde následne získané informácie trasfurnuje do použiteľného geojson formátu.
 
 # Frontend
 
-Frontendová časť aplikácie je HTML stránka (`index.html`), zobrazujúca mapu pomocou mapbox-gl.js. Súčasťou stránky je filter (Bootstrap) umožňujúci filtrovať typy zobrazených podnikov,zadávať vzdialenosť do ktorej má vyhľadávať podniky a aký typ spojenia má vyhľadať pri hľadaní trasy (priamy, s prestupom). Súčasťou filtra sú funkcie na spustenie vyhľadávania podnikov, zobrazenie heatmapy podnikov v oblastiach Bratislavy ,vyčistenie mapy a zobrazenia vyhľadaných liniek spojov. Samotná mapa podporuje interakciu formou popupv ako hľadanie podnikov v danej oblasti Bratislavy, vybratie podniku ku ktorej sa má hľadať trasa.
+Frontendová časť aplikácie je HTML stránka (`index.html`), zobrazujúca mapu pomocou mapbox-gl.js. Súčasťou stránky je filter (Bootstrap) umožňujúci filtrovať typy zobrazených podnikov,zadávať vzdialenosť do ktorej má vyhľadávať podniky a aký typ spojenia má vyhľadať pri hľadaní trasy (priamy, s prestupom). Súčasťou filtra sú funkcie na spustenie vyhľadávania podnikov, zobrazenie heatmapy podnikov v oblastiach Bratislavy ,vyčistenie mapy a zobrazenie vyhľadaných liniek spojov v časti Traffic linksT. Samotná mapa podporuje interakciu formou popupov ako hľadanie podnikov v danej oblasti Bratislavy, vybratie podniku ku ktorej sa má hľadať trasa.
 
 # Backend
 

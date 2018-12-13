@@ -206,11 +206,11 @@ public class DBAccessor {
 		}
 		String sql = "WITH neareststop AS ( select distinct l.ref, l.route,l.way, p.name from planet_osm_point p\r\n" + 
 				"cross join  planet_osm_line l \r\n" + 
-				"where p.highway like 'bus_stop' and l.route in ('bus','trolleybus','tram')\r\n" + 
+				"where p.highway like 'bus_stop' and  l.operator like 'DPB'and l.route in ('bus','trolleybus','tram')\r\n" + 
 				"and ST_DWithin((ST_MakePoint(%s,%s))::geography, ST_Transform(p.way, 4326)::geography, 150) and  st_dwithin(ST_Transform(l.way,4326)::geography, ST_Transform(p.way,4326)::geography,50) \r\n" + 
 				"), neraststopppoint AS ( select distinct l.ref, l.route,l.way, p.name from planet_osm_point p \r\n" + 
 				"cross join  planet_osm_line l \r\n" + 
-				"where p.highway like 'bus_stop' and l.route in ('bus','trolleybus','tram') and ST_DWithin((ST_MakePoint(%s))::geography, ST_Transform(p.way, 4326)::geography, 300)\r\n" + 
+				"where p.highway like 'bus_stop' and l.operator like 'DPB' and l.route in ('bus','trolleybus','tram') and ST_DWithin((ST_MakePoint(%s))::geography, ST_Transform(p.way, 4326)::geography, 300)\r\n" + 
 				"and  st_dwithin(ST_Transform(l.way,4326)::geography, ST_Transform(p.way,4326)::geography,50)) \r\n" + 
 				"select s.ref,p.ref, s.name, p.name from neareststop s\r\n" + 
 				"cross join neraststopppoint p \r\n" + 
