@@ -1,22 +1,17 @@
-*This is a documentation for a fictional project, just to show you what I expect. Notice a few key properties:*
-- *no cover page, really*
-- *no copy&pasted assignment text*
-- *no code samples*
-- *concise, to the point, gets me a quick overview of what was done and how*
-- *I don't really care about the document length*
-- *I used links where appropriate*
-
 # Overview
 
-This application shows hotels in Bratislava on a map. Most important features are:
-- search by proximity to my current location
-- search by hotel name
-- intelligent ordering - by proximity and by hotel features
-- hotels on the map are color coded by their quality assigned in stars (standard)
+Táto aplikácia zobrazuje pub a reštaurácie v Bratislave na mape. Niektoré z obsahujúcich funkcií sú:
+- vyhľadanie podniku (typ si môže vybrať používateľ) v zadanoom rozsahu od mojej aktuálnej pozície
+- zobrazenie heatmapy podnikov Bratislave nad jednotlivými oblasťami Bratislavi 
+- vyhľadanie podnikov (typ si môže vybrať používateľ) nad oblasťou v Bratislave
+- zobrazenie priameho spoju mestskej hromadnej dopravy od mojej aktuálnej polohy k podniku
+- vyhľadanie liniek s jedným prestupom od mojej akutálnej polohy k podniku
+- jednoduché resetovania mapy kliknutím na tlačidlo
+- zobrazenie súradníc podniku
 
-This is it in action:
+Vyhľadanie podnikov v zadanom radiuse:
 
-![Screenshot](screenshot.png)
+![Screenshot](findpubs.PNG)
 
 The application has 2 separate parts, the client which is a [frontend web application](#frontend) using mapbox API and mapbox.js and the [backend application](#backend) written in [Rails](http://rubyonrails.org/), backed by PostGIS. The frontend application communicates with backend using a [REST API](#api).
 
