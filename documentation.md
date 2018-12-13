@@ -33,16 +33,11 @@ Aplikácia pozostáva z dvoch častí, z frontendu a backendu. Frontend využív
 
 # Frontend
 
-Frontendová časť apliácie je HTML stránka (`index.html`), zobrazujúca mapu pomocou mapbox-gl.js. Súčasťou stránky je filter (s podporou Bootstrapu) umožňujúci filtrovať typy zobrazených podnikov a zadávať vzdialenosť do ktorej má vyhľadávať a aký typ spojenia má vyhľadať pri hľadaní trasy (priamy, s prestupom). Súčasťou filtra sú funkcie na zobrazenie heatmapy a vyčistenie mapy a zobrazenia vyhľadaných liniek spojov. Samotná mapa podporuje interakciu ako hľadanie podnikov v danej Oblasti Bratislavy, vybratie trasy ku, ktorej sa má hľadať trasa.
-
-All relevant frontend code is in `application.js` which is referenced from `index.html`. The frontend code is very simple, its only responsibilities are:
-- detecting user's location, using the standard [web location API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation)
-- displaying the sidebar panel with hotel list and filtering controls, driving the user interaction and calling the appropriate backend APIs
-- displaying geo features by overlaying the map with a geojson layer, the geojson is provided directly by backend APIs
+Frontendová časť aplikácie je HTML stránka (`index.html`), zobrazujúca mapu pomocou mapbox-gl.js. Súčasťou stránky je filter (Bootstrap) umožňujúci filtrovať typy zobrazených podnikov,zadávať vzdialenosť do ktorej má vyhľadávať podniky a aký typ spojenia má vyhľadať pri hľadaní trasy (priamy, s prestupom). Súčasťou filtra sú funkcie na spustenie vyhľadávania podnikov, zobrazenie heatmapy podnikov v oblastiach Bratislavy ,vyčistenie mapy a zobrazenia vyhľadaných liniek spojov. Samotná mapa podporuje interakciu formou popupv ako hľadanie podnikov v danej oblasti Bratislavy, vybratie podniku ku ktorej sa má hľadať trasa.
 
 # Backend
 
-The backend application is written in Ruby on Rails and is responsible for querying geo data, formatting the geojson and data for the sidebar panel.
+Backendová časť aplikácie je nakódená v jave s podporou frameworku Spring. Jej hlavnými úlohami sú obstáravanie requestov z frontedu, dopytovanie sa databázy a následné dopyty transformovať do funkčného formátu geojson. Prístp do databázy sa vykonáva v triede (`DBAccessor.java`) a úprava na podporovaný goejson formát v triede (`GJFormattter.java`).
 
 ## Data
 
