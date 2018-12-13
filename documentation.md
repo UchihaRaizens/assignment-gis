@@ -17,7 +17,7 @@ Zobrazenie heatmapy podnikov jednotlivých oblastiach Bratislavy:
 
 ![Screenshot](heatmap.PNG)
 
-Vyhľadanie podniko v oblasti Bratislavy:
+Vyhľadanie podnikov v oblasti Bratislavy:
 
 ![Screenshot](findheatmap.PNG)
 
@@ -27,9 +27,9 @@ Zobrazenie trasy priameho spoju:
 
 Vyhľadanie liniek s prestupom v okne Traffic links:
 
-![Screenshot](trafic.PNG)
+![Screenshot](transfer.PNG)
 
-The application has 2 separate parts, the client which is a [frontend web application](#frontend) using mapbox API and mapbox.js and the [backend application](#backend) written in [Rails](http://rubyonrails.org/), backed by PostGIS. The frontend application communicates with backend using a [REST API](#api).
+Aplikácia pozostáva z dvoch častí, z frontendu a backendu. Frontend využíva  mapbox API a mapbox.js a AJAXové volania na backend. Backend (java, spring) spracuje tieto volania, komunikuje a získava dáta z databázy, kde následne získané informácie trasfurnuje do použiteľného geojson formátu.
 
 # Frontend
 
@@ -50,24 +50,43 @@ Hotel data is coming directly from Open Street Maps. I downloaded an extent cove
 
 ## Api
 
-**Find hotels in proximity to coordinates**
+**Nájdi všetky bary a pub v rozsahu 50 metrov**
 
-`GET /search?lat=25346&long=46346123`
+`GET /search?radiusDistance=50&bar=true&pub=true&lng=17.067675558809526&lat=48.15798850101939`
 
-**Find hotels by name, sorted by proximity and quality**
 
-`GET /search?name=hviezda&lat=25346&long=46346123`
 
 ### Response
 
-API calls return json responses with 2 top-level keys, `hotels` and `geojson`. `hotels` contains an array of hotel data for the sidebar, one entry per matched hotel. Hotel attributes are (mostly self-evident):
+
 ```
 {
-  "name": "Modra hviezda",
-  "style": "modern", # cuisine style
-  "stars": 3,
-  "address": "Panska 31"
-  "image_url": "/assets/hotels/652.png"
+  "id": "1",
+  "type": "circle",
+  "source": {
+    "type": "geojson",
+    "data": {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+              17.0674386,
+              48.1583543
+            ]
+          },
+          "properties": {
+            "description": "Sole",
+            "marker-color": "#3bb2d0",
+            "marker-size": "large",
+            "marker-symbol": "rocket"
+          }
+        }
+      ]
+    }
+  }
 }
 ```
-`geojson` contains a geojson with locations of all matched hotels and style definitions.
+
